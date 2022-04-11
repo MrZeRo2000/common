@@ -2,7 +2,6 @@ rem
 rem Builds Android applications
 rem 
 
-CALL build_java_core.bat
 CALL build_android_libs.bat
 
 SET FOLDER=../../AndroidStudioProjects/

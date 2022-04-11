@@ -2,8 +2,10 @@ rem
 rem Builds and installs JAVA core libraries
 rem 
 
+@ECHO OFF
 
 SET FOLDER=../../
 SET LIST=jutils-core violetnote-core
+SET COMMAND=clean publishToMavenLocal
 
-FOR %%s IN (%LIST%) DO cmd /c "cd %FOLDER%%%s & gradlew.bat clean publishToMavenLocal"
+CALL internal_build.bat

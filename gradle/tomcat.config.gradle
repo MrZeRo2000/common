@@ -1,0 +1,10 @@
+ext {
+	if (project.hasProperty("tomcat_home")) {
+		tomcat_webapps = tomcat_home + '/webapps'
+	} else if (project.file('../apache-tomcat-10.1.10/').exists()) {
+		tomcat_webapps = '../apache-tomcat-10.1.10/webapps'
+	} else if (project.file('D:/prj/apache-tomcat-10.1.10/webapps/').exists()) {
+		tomcat_webapps = 'D:/prj/apache-tomcat-10.1.10/webapps'
+	}
+}
+

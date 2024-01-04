@@ -1,3 +1,4 @@
+@ECHO OFF
 rem 
 rem Builds Android applications
 rem 

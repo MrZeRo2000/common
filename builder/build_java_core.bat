@@ -1,8 +1,9 @@
+@ECHO OFF
 rem 
 rem Builds and installs JAVA core libraries
 rem 
 
-@ECHO OFF
+CALL set_java_home.bat
 
 SET FOLDER=../../
 SET LIST=jutils-core violetnote-core

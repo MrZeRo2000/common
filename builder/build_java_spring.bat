@@ -1,3 +1,4 @@
+@ECHO OFF
 rem 
 rem Builds JAVA Spring projects
 rem 

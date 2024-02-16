@@ -53,3 +53,107 @@ function Build {
     Set-Location $startLocation
 }
 
+function Start-Build-Java-Int {
+  param (        
+        [string]$project        
+    )
+    $startLocation = Get-Location    
+    
+    Set-Location -Path "$PSScriptRoot../../..$rootLocation/$project"
+    ./gradlew.bat clean deployInt    
+
+    Set-Location $startLocation
+}
+function Start-Build-Java-Prod {
+  param (        
+        [string]$project        
+    )
+    $startLocation = Get-Location    
+    
+    Set-Location -Path "$PSScriptRoot../../../$project"
+    ./gradlew.bat clean deployProd
+
+    Set-Location $startLocation
+}
+
+function Find-Tomcat  {
+  param (        
+    [string]$version = "10.1.10"  
+  )
+
+  $SearchPaths = "D:\prj\apache-tomcat-$version", "$env:USERPROFILE\prj\apache-tomcat-$version"
+  Write-Host Searching for TomCat in: $SearchPaths
+
+  foreach($SearchPath in $SearchPaths | Where-Object {Test-Path $_}) {
+    Write-Host Found TomCat in $SearchPath
+    return $SearchPath
+  }
+}
+
+function Remove-If-Exists {
+  param (
+    [string]$path
+  )
+
+  if (Test-Path -Path $path) {
+    Remove-Item -Path "$path\*" -Recurse -Confirm:$false
+  }
+}
+
+function Start-Build-Web {
+  param (
+    [string]$project
+  )
+  Write-Host Building project $project -ForegroundColor DarkGray
+
+  $startLocation = Get-Location
+
+  Set-Location "$PSScriptRoot../../../$project"
+  $env:Path += ";$env:LOCALAPPDATA\Programs\node;$PSScriptRoot../../../$project/node_modules/.bin"
+  
+  # remove prevously built project
+  Remove-If-Exists "dist/$project" -Recurse -Confirm:$false
+  # build the project
+  ng build --configuration production --base-href=/$project/
+
+  Set-Location $startLocation
+
+  Write-Host Project $project build completed -ForegroundColor Cyan
+}
+
+function Start-Deploy-Web {
+  param (
+    [string]$tomcat,
+    [string]$project
+  )
+  Write-Host Deploying project $project -ForegroundColor DarkGray
+
+  Remove-If-Exists "$tomcat\work\Catalina\localhost\$project"
+  Remove-If-Exists "$tomcat\webapps\$project"
+  
+  Copy-Item -Path "$PSScriptRoot../../../$project/dist/$project/*" -Destination "$tomcat\webapps\$project\" -Recurse  
+
+  Write-Host Project $project deployed -ForegroundColor Cyan
+}
+
+function Start-Build-And-Deploy-Web {
+  param (
+    [string]$project
+  )
+  $tomcat = Find-Tomcat
+  if (-Not($tomcat)) {
+    Write-Host "Tomcat not found" -ForegroundColor Red
+    return
+  }
+
+  Start-Build-Web -project $project
+  Start-Deploy-Web -tomcat $tomcat -project $project    
+}
+
+function Start-Build-And-Deploy-Java-Web {
+  param (
+    [string]$project
+  )
+  Start-Build-Java-Prod "$project-wss"
+  Start-Build-And-Deploy-Web "$project-ang"
+}

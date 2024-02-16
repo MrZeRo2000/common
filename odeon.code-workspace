@@ -1,0 +1,16 @@
+{
+	"folders": [
+		{
+			"name": "odeon-ang",
+			"path": "../odeon-ang"
+		},
+		{
+			"name": "odeon-wss",
+			"path": "../odeon-wss"
+		},
+		{
+			"path": "../odeon-test-data"
+		}
+	],
+	"settings": {}
+}

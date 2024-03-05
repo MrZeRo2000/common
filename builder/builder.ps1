@@ -47,7 +47,7 @@ function Build {
     
     foreach ($project in $projects.split()) {
       Set-Location -Path "$PSScriptRoot../../..$rootLocation/$project"
-      ./gradlew.bat $command.split()
+      ./gradlew.ps1 $command.split()
     }
 
     Set-Location $startLocation
@@ -60,7 +60,7 @@ function Start-Build-Java-Int {
     $startLocation = Get-Location    
     
     Set-Location -Path "$PSScriptRoot../../..$rootLocation/$project"
-    ./gradlew.bat clean deployInt    
+    ./gradlew.ps1 clean deployInt    
 
     Set-Location $startLocation
 }
@@ -71,7 +71,7 @@ function Start-Build-Java-Prod {
     $startLocation = Get-Location    
     
     Set-Location -Path "$PSScriptRoot../../../$project"
-    ./gradlew.bat clean deployProd
+    ./gradlew.ps1 clean deployProd
 
     Set-Location $startLocation
 }

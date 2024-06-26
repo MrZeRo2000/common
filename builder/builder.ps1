@@ -47,7 +47,7 @@ function Build {
     
     foreach ($project in $projects.split()) {
       Set-Location -Path "$PSScriptRoot../../..$rootLocation/$project"
-      ./gradlew.ps1 $command.split()
+      ./gradlew.ps1 $command
     }
 
     Set-Location $startLocation

@@ -1,5 +1,3 @@
-
-
 Write-Host "Starting" -ForegroundColor DarkGray
 
 do {

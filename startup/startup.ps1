@@ -1,3 +1,10 @@
+<#
+.Description
+Startup script
+PowerShell parameters to run hidden:
+-WindowStyle Hidden -ExecutionPolicy Bypass -File "startup.ps1"
+#>
+
 $foobarPath = "${env:ProgramFiles}\foobar2000\foobar2000.exe"
 if (Test-Path -Path $foobarPath -PathType leaf) {
   Write-Host "Starting FooBar" -ForegroundColor DarkGray

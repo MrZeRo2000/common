@@ -1,3 +1,11 @@
+<#
+.Description
+Startup script for cloud services
+PowerShell parameters to run hidden:
+-WindowStyle Hidden -ExecutionPolicy Bypass -File "startCloud.ps1"
+#>
+
+
 Write-Host "Starting" -ForegroundColor DarkGray
 
 do {

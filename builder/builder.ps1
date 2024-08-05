@@ -109,7 +109,13 @@ function Start-Build-Web {
   $startLocation = Get-Location
 
   Set-Location "$PSScriptRoot../../../$project"
-  $env:Path += ";$env:LOCALAPPDATA\Programs\node;$PSScriptRoot../../../$project/node_modules/.bin"
+
+  $localNodePath = "$env:LOCALAPPDATA\Programs\node\"
+  if (Test-Path -Path $localNodePath) {
+      $env:Path = $env:Path.Replace(";$env:Programfiles\nodejs\", "")
+      $env:Path += ";$localNodePath"      
+  }
+  $env:Path += ";$PSScriptRoot../../../$project/node_modules/.bin"
   
   # remove prevously built project
   Remove-If-Exists "dist/$project" -Recurse -Confirm:$false

@@ -1,4 +1,4 @@
-. "$PSScriptRoot\..\builder\builder.ps1"
+Import-Module $PSScriptRoot\..\builder\builder.ps1
 
 $tomcatPath = Find-Tomcat
 Write-Host "Tomcat: $tomcatPath" -ForegroundColor DarkGray

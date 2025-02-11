@@ -120,7 +120,8 @@ function Start-Build-Web {
   # remove prevously built project
   Remove-If-Exists "dist/$project" -Recurse -Confirm:$false
   # build the project
-  ng build --configuration production --base-href=/$project/
+  Write-Host "Current location: $(Get-Location)" -ForegroundColor DarkGray
+  Invoke-Expression "ng build --configuration production --base-href=/$project/"
 
   Set-Location $startLocation
 
@@ -137,7 +138,7 @@ function Start-Deploy-Web {
   Remove-If-Exists "$tomcat\work\Catalina\localhost\$project"
   Remove-If-Exists "$tomcat\webapps\$project"
   
-  Copy-Item -Path "$PSScriptRoot../../../$project/dist/$project/*" -Destination "$tomcat\webapps\$project\" -Recurse  
+  Copy-Item -Path "$PSScriptRoot../../../$project/dist/$project/browser/*" -Destination "$tomcat\webapps\$project\" -Recurse  
 
   Write-Host Project $project deployed -ForegroundColor Cyan
 }

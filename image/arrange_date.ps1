@@ -1,7 +1,7 @@
-Import-Module -Name (Join-Path -Path $PSScriptRoot -ChildPath config.ps1) -Variable "new_folder"
+Import-Module -Name (Join-Path -Path $PSScriptRoot -ChildPath config.ps1) -Variable "img_new_folder"
 
 
-$path = $new_folder
+$path = $img_new_folder
 if (-Not (Test-Path -Path $path)) {
     throw "Path $path does not exist."
 }

@@ -1,3 +1,11 @@
+<#
+.SYNOPSIS
+    This script organizes image files into folders based on their last modified date.
+.DESCRIPTION
+    The script moves image files from a specified directory to subdirectories named after the last modified date of the files.
+    It checks if the destination folder already exists and creates it if necessary.
+#>
+
 Import-Module -Name (Join-Path -Path $PSScriptRoot -ChildPath config.ps1) -Variable "img_new_folder"
 
 

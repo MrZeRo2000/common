@@ -1,3 +1,10 @@
+<#
+.SYNOPSIS
+  Configuration for image processing scripts
+.DESCRIPTION
+  Variables and functions to set up the environment for image processing tasks
+#>
+
 $img_new_folder = $Env:USERPROFILE + "\Photo\New"
 $img_jpeg_folder = "$env:USERPROFILE\Photo\JPEG"
 $img_view_folder = "$env:USERPROFILE\Photo\View"

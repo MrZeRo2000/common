@@ -55,7 +55,7 @@ Write-Host ""
 # Resize
 Write-Host "Resize View Started" -ForegroundColor Magenta
 Get-ChildItem -Path $config.img_view_folder -Directory | ForEach-Object { 
-    $cmd = "$($config.tool_mogrify) -quality 90 -filter Lanczos -resize ""1280x1280^>"" -monitor ""$($config.img_view_folder)\$($_.Name)\*.jpg"""
+    $cmd = "$($config.tool_mogrify) -quality 90 -filter Lanczos -resize 1280x1280> -monitor ""$($config.img_view_folder)\$($_.Name)\*.jpg"""
     Invoke-Expression -Command $cmd
 
     $exitCode = $LASTEXITCODE

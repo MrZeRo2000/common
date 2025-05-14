@@ -20,7 +20,7 @@ Function Copy-EXIF() {
     $srcFiles = Get-ChildItem -Path $srcFolder -Recurse -File -Include *.jpg
     $destFiles = Get-ChildItem -Path $destFolder -Recurse -File -Include *.jpg
 
-    Write-Host "Source files: $($srcFiles.Count), Destination files: $($dstFiles.Count)" -ForegroundColor DarkGray
+    Write-Host "Source files: $($srcFiles.Count), Destination files: $($destFiles.Count)" -ForegroundColor DarkGray
 
     # Create a hashtable for destination files using their names as keys
     $destFileTable = @{}
@@ -29,22 +29,39 @@ Function Copy-EXIF() {
             $destFileTable[$file.Name] = @()
         }
         $destFileTable[$file.Name] += $file.FullName
-        Write-Host "Added full name: $($file.FullName) to key $($file.Name)"
     }
 
     foreach ($srcFile in $srcFiles) {
       if ($destFileTable.ContainsKey($srcFile.Name)) {
           foreach ($destMatch in $destFileTable[$srcFile.Name]) {
-              $cmd = "$exifToolPath -overwrite_original -tagsFromFile ""$($srcFile.FullName)"" ""$destMatch"""
-              Write-Host "Command: $cmd" -ForegroundColor DarkGray
+            $tmpSrcFile = "$env:TEMP\$(New-Guid).jpg"
+            if (Test-Path $tmpSrcFile) {
+                Remove-Item -Path $tmpSrcFile -Force
+            }
 
-              Invoke-Expression -Command $cmd
+            $tmpDestFile = "$env:TEMP\$(New-Guid).jpg"
+            if (Test-Path $tmpDestFile) {
+                Remove-Item -Path $tmpDestFile -Force
+            }
 
-              $exitCode = $LASTEXITCODE
-              if ($exitCode -ne 0) {
-                  Write-Host "EXIFTool failed with exit code $exitCode" -ForegroundColor Red
-                  exit 1
-              }
+            Copy-Item -Path $srcFile.FullName -Destination $tmpSrcFile
+            Copy-Item -Path $destMatch -Destination $tmpDestFile
+
+            $cmd = "$exifToolPath -overwrite_original -tagsFromFile ""$tmpSrcFile"" ""$tmpDestFile"""
+            # Write-Host "Command: $cmd" -ForegroundColor DarkGray
+
+            Invoke-Expression -Command $cmd
+
+            $exitCode = $LASTEXITCODE
+            if ($exitCode -ne 0) {
+                Write-Host "EXIFTool failed with exit code $exitCode" -ForegroundColor Red
+                exit 1
+            }
+
+            Copy-Item -Path $tmpDestFile -Destination $destMatch -Force
+
+            Remove-Item -Path $tmpSrcFile -Force
+            Remove-Item -Path $tmpDestFile -Force
           }
       }
     }

@@ -73,7 +73,7 @@ Invoke-Expression -Command $cmd
 
 $exitCode = $LASTEXITCODE
 if ($exitCode -ne 0) {
-    Write-Host "EXIFFool for resized failed with exit code $exitCode" -ForegroundColor Red
+    Write-Host "EXIFTool for resized failed with exit code $exitCode" -ForegroundColor Red
     exit 1
 }
 

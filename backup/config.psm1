@@ -24,9 +24,17 @@ Function Get-BackupConfig {
     throw "Target root path not found"
   }
 
+  $securityPath = Join-Path -Path $PSScriptRoot -ChildPath "security.json"
+  if (-Not (Test-Path -Path $securityPath)) {
+    throw "Security file not found at $securityPath"
+  }
+
+  $security = Get-Content -Raw $securityPath | ConvertFrom-Json
+
 
   return @{
     winRARPath = $winRARPath
     targetRootPath = $targetRootPath
+    archivePassword = $security.archivePassword
   }
 }

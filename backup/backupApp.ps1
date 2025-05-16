@@ -19,12 +19,13 @@ if (($exitCode -ne 0) -and ($null -ne $exitCode)) {
 
 $apps = @{
   foobar2000_v2_config = "$env:APPDATA\foobar2000\foobar2000-v2"
-  photoshop_settings = "$env:APPDATA\Adobe\Adobe Photoshop*\Adobe Photoshop*Settings\*.*"
-  postman_settings = "$env:APPDATA\Postman\*.*"
+  photoshop_settings = "$env:APPDATA\Adobe\Adobe Photoshop*\Adobe Photoshop*Settings"
+  lightroom_settings = "$env:APPDATA\Adobe\Lightroom"
   TagRename_config = "$env:TEMP\TagRename.reg"
+  ssh_config = "$env:USERPROFILE\.ssh"
 }
 
-$argsTemplate = "a -r -agYYMMDD_HHMM -m5 ""$targetPath\{0}"" ""{1}"""
+$argsTemplate = "a -r -hp$($backupConfig.archivePassword) -agYYMMDD_HHMM -m5 ""$targetPath\{0}"" ""{1}"""
 Write-Host "Arguments template: $argsTemplate" -ForegroundColor DarkGray
 
 $apps.Keys | ForEach-Object {
@@ -37,12 +38,7 @@ $apps.Keys | ForEach-Object {
 
   $currentDate = Get-Date
 
-  $process = Start-Process -FilePath """$($backupConfig.winRARPath)""" -ArgumentList $arguments -NoNewWindow -Wait -PassThru
-  $exitCode = $process.ExitCode
-  if (($exitCode -ne 0) -and ($null -ne $exitCode)) {
-    Write-Host "WinRAR failed with exit code $exitCode" -ForegroundColor Red
-    exit 1
-  }
+  Start-Process -FilePath """$($backupConfig.winRARPath)""" -ArgumentList $arguments -NoNewWindow -Wait
 
   if ((Get-ChildItem -Path "$targetPath\$appName*.*" -File -Recurse | Where-Object { $_.LastWriteTime -ge ($currentDate) }).Count -eq 0) {
     # throw "No files were produced for $appName in $appPath"

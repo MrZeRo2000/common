@@ -18,8 +18,8 @@ if (($exitCode -ne 0) -and ($null -ne $exitCode)) {
 }
 
 $apps = @{
-  foobar2000_v2_config = "$env:APPDATA\foobar2000\foobar2000-v2"
-  photoshop_settings = "$env:APPDATA\Adobe\Adobe Photoshop*\Adobe Photoshop*Settings"
+  foobar2000_v2_config = "$env:APPDATA\foobar2000-v2"
+  photoshop_settings = "$env:APPDATA\Adobe\Adobe Photoshop*\Adobe Photoshop*Settings\*.*"
   lightroom_settings = "$env:APPDATA\Adobe\Lightroom"
   TagRename_config = "$env:TEMP\TagRename.reg"
   ssh_config = "$env:USERPROFILE\.ssh"

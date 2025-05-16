@@ -10,7 +10,12 @@ Write-Host "Target root folder: $($backupConfig.targetRootPath)" -ForegroundColo
 $targetPath = Join-Path -Path $backupConfig.targetRootPath -ChildPath "App"
 
 # Prepare registry exports
-Start-Process -FilePath "regedit" -ArgumentList "/e", "$env:TEMP\TagRename.reg", "HKEY_CURRENT_USER\Software\Softpointer" -NoNewWindow -Wait
+$process = Start-Process -FilePath "regedit" -ArgumentList "/e", "$env:TEMP\TagRename.reg", "HKEY_CURRENT_USER\Software\Softpointer" -NoNewWindow -Wait -PassThru
+$exitCode = $process.ExitCode
+if (($exitCode -ne 0) -and ($null -ne $exitCode)) {
+  Write-Host "WinRAR failed with exit code $exitCode" -ForegroundColor Red
+  exit 1
+}
 
 $apps = @{
   foobar2000_v2_config = "$env:APPDATA\foobar2000\foobar2000-v2"
@@ -32,9 +37,9 @@ $apps.Keys | ForEach-Object {
 
   $currentDate = Get-Date
 
-  Start-Process -FilePath """$($backupConfig.winRARPath)""" -ArgumentList $arguments -NoNewWindow -Wait 
-  $exitCode = $LASTEXITCODE
-  if (($exitCode -ne 0) -and ($exitCode -ne $null)) {
+  $process = Start-Process -FilePath """$($backupConfig.winRARPath)""" -ArgumentList $arguments -NoNewWindow -Wait -PassThru
+  $exitCode = $process.ExitCode
+  if (($exitCode -ne 0) -and ($null -ne $exitCode)) {
     Write-Host "WinRAR failed with exit code $exitCode" -ForegroundColor Red
     exit 1
   }

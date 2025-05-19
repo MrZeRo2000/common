@@ -13,7 +13,7 @@ Function Get-FilesCountAndSize {
     $result = @{}
 
     Get-ChildItem -Path $folder -Recurse -File | Group-Object -Property Directory | ForEach-Object {
-        $name = $_.Name.Replace($folder, '')
+        $name = $_.Name.Replace($folder, 'root')
         $result.Add($name, (@{         
             Count     = $_.Group.Count
             Size     = (($_.Group | Measure-Object -Property Length -Sum).Sum)
@@ -37,18 +37,40 @@ $folders | ForEach-Object {
     }
 }
 
-$foldersFiledCountAndSizes = $folders | ForEach-Object {
+$foldersInfo = $folders | ForEach-Object {
     return Get-FilesCountAndSize -folder $_
 }
 
-Write-Host "1 count: $($foldersFiledCountAndSizes[0].Keys.Count)" -ForegroundColor DarkGray
-Write-Host "2 count: $($foldersFiledCountAndSizes[1].Keys.Count)" -ForegroundColor DarkGray
-
-$allKeys = $foldersFiledCountAndSizes[0].Keys + $foldersFiledCountAndSizes[1].Keys
-Write-Host "all keys count: $($allKeys.Count)" -ForegroundColor DarkGray
-
-$allKeysUnique = $allKeys | Sort-Object -Unique
+$allKeysUnique = ($foldersInfo[0].Keys + $foldersInfo[1].Keys) | Sort-Object -Unique
 Write-Host "all keys unique count: $($allKeysUnique.Count)" -ForegroundColor DarkGray
+
+foreach ($key in $allKeysUnique) {    
+    for ($i = 0; $i -lt $folders.Length; $i++) {
+        if (-Not $foldersInfo[$i].ContainsKey($key)) {
+            throw "Folder $($folders[$i]) does not contain path $key"
+        } 
+
+        if ($i -gt 0) {
+            $diff = @{
+                Count = $foldersInfo[0][$key].Count - $foldersInfo[$i][$key].Count
+                Size  = $foldersInfo[0][$key].Size - $foldersInfo[$i][$key].Size
+            }
+        }
+    }
+
+    if ($diff.Count -Ne 0) {
+        throw "Different number of files:" + 
+        "`n$($folders[0]): $($foldersInfo[0][$key].Count)" + 
+        "`n$($folders[1]): $($foldersInfo[1][$key].Count)"
+    }
+ 
+    if ($diff.Size -Ne 0) {
+        throw "Different file sizes:" + 
+        "`n$($folders[0]): $($foldersInfo[0][$key].Size)" + 
+        "`n$($folders[1]): $($foldersInfo[1][$key].Size)"
+    }
+ 
+}
 
 
 <#

@@ -12,12 +12,29 @@ Function Get-FilesCountAndSize {
 
     $result = @{}
 
+    <#
     Get-ChildItem -Path $folder -Recurse -File | Group-Object -Property Directory | ForEach-Object {
         $name = $_.Name.Replace($folder, 'root')
         $result.Add($name, (@{         
             Count     = $_.Group.Count
             Size     = (($_.Group | Measure-Object -Property Length -Sum).Sum)
         }))
+    }
+    #>
+
+    Get-ChildItem -Path $folder -Recurse -File | ForEach-Object {
+        $folderName = $_.Directory.Name.Replace($folder, 'root')
+        $fileSize = $_.Length
+        if ($result.ContainsKey($folderName)) {
+            $value = $result[$folderName]
+            $value.Count = $value.Count + 1
+            $value.Size = $value.Size + $fileSize
+        } else {
+            $result[$folderName] = @{
+                Count = 1
+                Size = $fileSize
+            }
+        }
     }
 
     return $result

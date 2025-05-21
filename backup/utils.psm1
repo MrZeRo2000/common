@@ -48,7 +48,6 @@ Function Compare-FolderSize {
     $foldersInfo = $folders | ForEach-Object {
         return Get-FilesCountAndSize -folder $_
     }
-    Write-Host "Read folders info" -ForegroundColor DarkGray
 
     $allKeysUnique = ($foldersInfo[0].Keys + $foldersInfo[1].Keys) | Sort-Object -Unique
     # Write-Host "all keys unique count: $($allKeysUnique.Count)" -ForegroundColor DarkGray
@@ -100,7 +99,7 @@ Function Move-LogsByYear {
 
       $oldFilePath = Join-Path -Path $path -ChildPath $name
 
-      $newFilePathDate = Join-Path -Path $path -ChildPath $date
+      $newFilePathDate = Join-Path -Path $path -ChildPath (Join-Path -Path "Log" -ChildPath $date)
       $newFilePath = Join-Path -Path $newFilePathDate -ChildPath $name
 
       if (-Not (Test-Path -Path $newFilePath)) {
@@ -135,4 +134,63 @@ Function Sync-DriveFolders {
     throw "Target path $($targetDrivePath) not found"   
   }
 
+  # backup / sync
+  foreach ($folder in $folderList) {
+    $sourcePath = Join-Path -Path $sourceDrivePath -ChildPath $folder 
+    $targetPath = Join-Path -Path $targetDrivePath -ChildPath $folder 
+
+    if (-not (Test-Path -Path $sourcePath)) {
+      throw "Source path $($sourcePath) not found"   
+    }
+    Write-Host "Processing source path $sourcePath" -ForegroundColor DarkGray
+
+    $executionTime = Measure-Command {
+      $logFileName = "$(Get-Date -Format ""yyyy_MM_dd HH_mm_ss"") app log.txt"
+      $logFilePath = Join-Path -Path $sourceDrivePath -Child $($logFileName)
+      $copyArgs = @(
+        $sourcePath,
+        $targetPath,
+        "/MIR", 
+        "/FFT",
+        "/R:0", 
+        "/Z",
+        "/TEE", 
+        "/NP",
+        "/LOG:""$logFilePath"""
+      )
+
+      $process = Start-Process -FilePath "robocopy" -ArgumentList $copyArgs -NoNewWindow -Wait -PassThru
+      $exitCode = $process.ExitCode
+
+      if ($exitCode -eq 0) {
+        Write-Host "No files were copied" -ForegroundColor Magenta
+      }
+
+      if ($exitCode -eq 1) {
+        Write-Host "Files were copied" -ForegroundColor Cyan
+      }
+
+      if ($exitCode -gt 1) {
+        throw "robocopy failed with exit code $exitCode"
+        exit 1      
+      }    
+    }
+    Write-Host "Processing source path $sourcePath completed in $($executionTime.Seconds) seconds" -ForegroundColor DarkGray
+  }
+
+  # compare
+  foreach ($folder in $folderList) {
+    $sourcePath = Join-Path -Path $sourceDrivePath -ChildPath $folder 
+    $targetPath = Join-Path -Path $targetDrivePath -ChildPath $folder 
+    Write-Host "`nComparing $sourcePath with $targetPath ..." -ForegroundColor DarkGray
+
+    $executionTime = Measure-Command {
+      Compare-FolderSize $sourcePath $targetPath
+    }
+    Write-Host "Comparing $folder completed in $($executionTime.Seconds) seconds" -ForegroundColor DarkGray
+  }
+
+  # archive logs
+  Move-LogsByYear $sourceDrivePath
+  Write-Host "Archiving logs completed" -ForegroundColor DarkGray
 }

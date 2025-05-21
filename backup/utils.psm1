@@ -114,3 +114,25 @@ Function Move-LogsByYear {
       }
     }
   }
+
+Function Sync-DriveFolders {
+  param(
+      [Parameter(Position=0, Mandatory=$true)]
+      [string]$sourceDriveLetter,
+      [Parameter(Position=1, Mandatory=$true)]
+      [string]$targetDriveLetter,
+      [Parameter(Position=2, Mandatory=$true)]
+      [string[]]$folderList
+  )
+
+  $sourceDrivePath = "$($sourceDriveLetter):\"
+  if (-not (Test-Path -Path $sourceDrivePath)) {
+    throw "Source path $($sourceDrivePath) not found"   
+  }
+
+  $targetDrivePath = "$($targetDriveLetter):\"
+  if (-not (Test-Path -Path $targetDrivePath)) {
+    throw "Target path $($targetDrivePath) not found"   
+  }
+
+}

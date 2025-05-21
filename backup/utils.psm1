@@ -94,7 +94,7 @@ Function Move-LogsByYear {
 
     $path = Resolve-Path -Path $inputPath    
 
-    Get-Childitem -Path $path -File | Where-Object {$_.Name -match '(txt$|log$)'} | Select-Object -Property Name, LastWriteTime | ForEach-Object {
+    Get-Childitem -Path $path -File | Where-Object {$_.Name -match '(.txt$|.log$)'} | Select-Object -Property Name, LastWriteTime | ForEach-Object {
       $name = $_.Name
       $date = $_.LastWriteTime.ToString("yyyy")
 

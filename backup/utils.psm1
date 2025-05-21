@@ -92,6 +92,25 @@ Function Move-LogsByYear {
         throw "Path $($inputPath) not found"
     }
 
-    $path = Resolve-Path -Path $inputPath
-    Write-Host "Resolved path $path" -ForegroundColor DarkGray
+    $path = Resolve-Path -Path $inputPath    
+
+    Get-Childitem -Path $path -File | Where-Object {$_.Name -match '(txt$|log$)'} | Select-Object -Property Name, LastWriteTime | ForEach-Object {
+      $name = $_.Name
+      $date = $_.LastWriteTime.ToString("yyyy")
+
+      $oldFilePath = Join-Path -Path $path -ChildPath $name
+
+      $newFilePathDate = Join-Path -Path $path -ChildPath $date
+      $newFilePath = Join-Path -Path $newFilePathDate -ChildPath $name
+
+      if (-Not (Test-Path -Path $newFilePath)) {
+        if (-Not (Test-Path -Path $newFilePathDate)) {
+          New-Item -Path $newFilePathDate -ItemType Directory | Out-Null
+        }
+        Move-Item -Path $oldFilePath -Destination $newFilePath
+        Write-Host "Moved file: $oldFilePath to $newFilePath" -ForegroundColor DarkGray
+      } else {
+          Write-Host "File already exists: $newFileName" -ForegroundColor Red
+      }
+    }
   }

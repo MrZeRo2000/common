@@ -38,3 +38,13 @@ Function Get-BackupConfig {
     archivePassword = $security.archivePassword
   }
 }
+
+Function Get-BackupSchema {
+
+  $schemaPath = Join-Path -Path $PSScriptRoot -ChildPath "schema.json"
+  if (-Not (Test-Path -Path $schemaPath)) {
+    throw "Schema file not found at $schemasPath"
+  }
+
+  return Get-Content -Raw -Path $schemaPath | ConvertFrom-Json
+}

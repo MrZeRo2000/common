@@ -1,0 +1,64 @@
+[
+    {
+        "sourceDrive":  "L",
+        "targetDrive":  "M",        
+        "name":  "Backup media to M",
+        "folders": [
+          "Animation", 
+          "Movies", 
+          "Music", 
+          "Source", 
+          "Download"
+        ]
+    },
+    {
+        "sourceDrive":  "L",
+        "targetDrive":  "N",        
+        "name":  "Backup media to N",
+        "folders": [
+          "Animation", 
+          "Movies", 
+          "Music", 
+          "Source", 
+          "Download"
+        ]
+    },
+    {
+        "sourceDrive":  "J",
+        "targetDrive":  "I",        
+        "name":  "Backup data to I",
+        "folders": [
+          "ARCHIVE",
+          "DVD",
+          "Games",
+          "Hi-Res",
+          "KoLXo3",
+          "LIB", 
+          "Media", 
+          "NODVD", 
+          "PhotoView",
+          "Sound", 
+          "Training", 
+          "Health"
+        ]
+    },
+    {
+        "sourceDrive":  "J",
+        "targetDrive":  "T",        
+        "name":  "Backup data to T",
+        "folders": [
+          "ARCHIVE",
+          "DVD",
+          "Games",
+          "Hi-Res",
+          "KoLXo3",
+          "LIB", 
+          "Media", 
+          "NODVD", 
+          "PhotoView",
+          "Sound", 
+          "Training", 
+          "Health"
+        ]
+    }
+]

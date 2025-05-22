@@ -1,3 +1,6 @@
+
+Import-Module -Name (Join-Path -Path $PSScriptRoot -ChildPath config.psm1) -Function Get-BackupSchema -Force
+
 Function Get-FilesCountAndSize {
   param (
       [string]$folder
@@ -219,4 +222,27 @@ Function Sync-DriveFolders {
   # archive logs
   Move-LogsByYear $sourceDrivePath
   Write-Host "Archiving logs completed" -ForegroundColor DarkGray
+}
+
+Function Sync-SchemaDrives {
+  $backupSchema = Get-BackupSchema
+
+  $availableDriveNames = Get-PSDrive | Where-Object {$_.Provider.Name -eq 'FileSystem'} | Select-Object -ExpandProperty Name
+
+  $availableBackupSchemas = $backupSchema | Where-Object {
+    $availableDriveNames.contains($_.sourceDrive) -and $availableDriveNames.contains($_.targetDrive)
+  }
+
+  if ($availableBackupSchemas.Length -eq 0) {
+    throw "Backup schema not found for available drives: $($availableDriveNames -join ', '))"
+  }
+
+  if ($availableBackupSchemas.Length -gt 1) {
+    throw "More than one backup schema found for available drives: $($availableDriveNames -join ', ')"
+  }
+
+  $workingBackupSchema = $availableBackupSchemas[0]
+  Write-Host "Found backup schema: $($workingBackupSchema.name)" -ForegroundColor Magenta
+  
+  Sync-DriveFolders $workingBackupSchema.sourceDrive $workingBackupSchema.targetDrive $workingBackupSchema.folders
 }

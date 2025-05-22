@@ -1,3 +1,10 @@
+<#
+.SYNOPSIS
+    This script collects user related data from local machine and backs up to OneDrive
+.DESCRIPTION
+    This script collects user related data from local machine and backs up to OneDrive.
+    Has no arguments
+#>
 
 $ErrorActionPreference = "Stop"
 

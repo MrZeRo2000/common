@@ -174,6 +174,20 @@ Function Sync-DriveFolders {
     throw "Target path $($targetDrivePath) not found"   
   }
 
+  # handle Odeon separately
+  $odeon = "Odeon"
+  $odeonSourcePath = Join-Path -Path $sourceDrivePath -ChildPath $odeon
+  if (Test-Path -Path $odeonSourcePath) {
+    $oneDriveRootPath = $env:ONEDRIVE
+    if ($null -ne $oneDriveRootPath) {
+      $oneDriveOdeonPath = Join-Path -Path $oneDriveRootPath -ChildPath $odeon
+      if (Test-Path -Path $oneDriveOdeonPath) {        
+        Sync-Folder $oneDriveOdeonPath $odeonSourcePath $odeon 
+        Write-Host "Odeon refreshed" -ForegroundColor Magenta
+      }
+    }
+  }
+
   # backup / sync
   foreach ($folder in $folderList) {
     $sourcePath = Join-Path -Path $sourceDrivePath -ChildPath $folder 

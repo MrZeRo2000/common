@@ -41,9 +41,7 @@ function FetchRepo {
     Write-Host "Fetching repo in $Location" -ForegroundColor DarkCyan
     
     if (Test-Path "$Location\.git\") {
-        Write-Host "Found Git in $Location" -ForegroundColor DarkGreen
         Set-Location -Path "$Location\"
-        # Invoke-Expression -Command "git pull --rebase"
 
         $process = Start-Process -FilePath "git" -ArgumentList "pull", "--rebase" -NoNewWindow -Wait -PassThru
         $exitCode = $process.ExitCode

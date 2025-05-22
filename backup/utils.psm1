@@ -123,11 +123,15 @@ Function Sync-Folder {
     [Parameter(Position=1, Mandatory=$true)]
     [string]$targetPath,
     [Parameter(Position=2, Mandatory=$true)]
-    [string]$folderName
+    [string]$folderName,
+    [Parameter(Position=3, Mandatory=$false)]
+    [bool]$isTargetPathLog=$false
   )
 
+  $logFileRootPath = if($isTargetPathLog) {$targetPath} else {$sourcePath}
   $logFileName = "$(Get-Date -Format ""yyyy_MM_dd HH_mm_ss"") $folderName log.txt"
-  $logFilePath = Join-Path -Path $(Split-Path -Path $sourcePath -Qualifier) -Child $($logFileName)
+  $logFilePath = Join-Path -Path $(Split-Path -Path $logFileRootPath -Qualifier) -Child $($logFileName)
+
   $copyArgs = @(
     $sourcePath,
     $targetPath,
@@ -143,17 +147,23 @@ Function Sync-Folder {
   $process = Start-Process -FilePath "robocopy" -ArgumentList $copyArgs -NoNewWindow -Wait -PassThru
   $exitCode = $process.ExitCode
 
+  # https://learn.microsoft.com/en-us/troubleshoot/windows-server/backup-and-storage/return-codes-used-robocopy-utility
   if ($exitCode -eq 0) {
     Write-Host "No files were copied" -ForegroundColor Magenta
-  }
-
-  if ($exitCode -eq 1) {
+  } elseif ($exitCode -eq 1) {
     Write-Host "Files were copied" -ForegroundColor Cyan
-  }
-
-  if ($exitCode -gt 1) {
+  } elseif ($exitCode -eq 2) {
+    Write-Host "There are some additional files in the destination directory. No files were copied." -ForegroundColor Magenta
+  } elseif ($exitCode -eq 3) {
+    Write-Host "Some files were copied. Additional files were present." -ForegroundColor Cyan
+  } elseif ($exitCode -eq 5) {
+    Write-Host "Some files were copied. Some files were mismatched." -ForegroundColor Cyan
+  } elseif ($exitCode -eq 6) {
+    Write-Host "Additional files and mismatched files exist. No files were copied." -ForegroundColor Magenta
+  } elseif ($exitCode -eq 7) {
+    Write-Host "AFiles were copied, a file mismatch was present, and additional files were present." -ForegroundColor Cyan
+  } elseif ($exitCode -gt 7) {
     throw "robocopy failed with exit code $exitCode"
-    exit 1      
   }
 }
 
@@ -185,7 +195,7 @@ Function Sync-DriveFolders {
     if ($null -ne $oneDriveRootPath) {
       $oneDriveOdeonPath = Join-Path -Path $oneDriveRootPath -ChildPath $odeon
       if (Test-Path -Path $oneDriveOdeonPath) {        
-        Sync-Folder $oneDriveOdeonPath $odeonSourcePath $odeon 
+        Sync-Folder $oneDriveOdeonPath $odeonSourcePath $odeon $true
         Write-Host "Odeon refreshed" -ForegroundColor Magenta
       }
     }
@@ -234,7 +244,7 @@ Function Sync-SchemaDrives {
   }
 
   if ($availableBackupSchemas.Length -eq 0) {
-    throw "Backup schema not found for available drives: $($availableDriveNames -join ', '))"
+    throw "Backup schema not found for available drives: $($availableDriveNames -join ', ')"
   }
 
   if ($availableBackupSchemas.Length -gt 1) {

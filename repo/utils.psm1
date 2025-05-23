@@ -11,7 +11,7 @@ function Update-RepoAll {
     }
 
     # include root folder
-    $allFolderNames = @("", $FolderNames)
+    $allFolderNames = @("") + $FolderNames
     
     ForEach($FolderName in $allFolderNames) {
         $path = Join-Path -Path $rootPath -Child $FolderName

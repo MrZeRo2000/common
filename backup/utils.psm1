@@ -9,7 +9,8 @@ Function Get-FilesCountAndSize {
 	$result = @{}
 
 	Get-ChildItem -Path $folder -Recurse -File | ForEach-Object {
-		$folderName = $_.Directory.Name.Replace($folder, 'root')
+		$folderName = $_.Directory.FullName.Replace($folder, '~')
+
 		$fileSize = $_.Length
 		if ($result.ContainsKey($folderName)) {
 			$value = $result[$folderName]

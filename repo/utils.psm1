@@ -1,4 +1,4 @@
-function FetchRepoAll {
+function Update-RepoAll {
     param (
         [Parameter(Mandatory)]
         [string[]]$FolderNames
@@ -11,7 +11,7 @@ function FetchRepoAll {
     }
 
     # include root folder
-    $allFolderNames = $FolderNames + ""
+    $allFolderNames = $("", $FolderNames)
     
     ForEach($FolderName in $allFolderNames) {
         $path = Join-Path -Path $rootPath -Child $FolderName
@@ -26,13 +26,13 @@ function FetchRepoAll {
 
         # Write-Host "Running for folders  $($RepoFolders -join ', ')" -ForegroundColor DarkGray            
         ForEach($RepoFolder in $RepoFolders) {            
-            FetchRepo $RepoFolder
+            Update-Repo $RepoFolder
         }
     }    
     
 }
 
-function FetchRepo {
+function Update-Repo {
     param (
         [Parameter(Mandatory)]
         [string[]]$Location

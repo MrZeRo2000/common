@@ -1,7 +1,7 @@
-Import-Module -Name (Join-Path -Path $PSScriptRoot -ChildPath fetchRepo.psm1) -Function FetchRepoAll -Force
+Import-Module -Name (Join-Path -Path $PSScriptRoot -ChildPath utils.psm1) -Function Update-RepoAll -Force
 
 # Write-Host "$PSScriptRoot\builder.ps"
 
-FetchRepoAll "AndroidStudioProjects", "PyCharmProjects"
+Update-RepoAll "AndroidStudioProjects", "PyCharmProjects"
 
 Set-Location -Path "$PSScriptRoot"

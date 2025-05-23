@@ -15,6 +15,6 @@ $targetRootPath = "Z:"
 $folders = "Lossless", "MP3 Music", "Classics"
 
 foreach($folder in $folders) {
-  #Write-Host "Sync $sourceRootPath\$folder $targetRootPath\$folder $folder"
-  Sync-Folder "$sourceRootPath\$folder" "$targetRootPath\$folder" $folder
+    #Write-Host "Sync $sourceRootPath\$folder $targetRootPath\$folder $folder"
+    Sync-Folder "$sourceRootPath\$folder" "$targetRootPath\$folder" $folder
 }

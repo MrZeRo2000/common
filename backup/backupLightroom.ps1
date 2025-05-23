@@ -18,8 +18,6 @@ $archiveName = "Lightroom"
 $sourcePath = Join-Path -Path (Join-Path -Path (Join-Path -Path "$env:USERPROFILE" -ChildPath Photo) -ChildPath Lightroom) -ChildPath "*.lrcat"
 $targetPath = Join-Path -Path $backupConfig.targetRootPath -ChildPath Project
 $targetArchivePath = Join-Path -Path $targetPath -ChildPath "$archiveName.rar"
-$targetArchiveMaskPath = Join-Path -Path $targetPath -ChildPath "$archiveName*.*"
-
 
 $arguments = "a -r -e+shrad -hp$($backupConfig.archivePassword) -agYYMMDD_HHMM -m5 -ep ""$targetArchivePath"" ""$sourcePath"""
 Write-Host "Arguments: $arguments" -ForegroundColor DarkGray
@@ -28,6 +26,7 @@ $currentDate = Get-Date
 
 Start-Process -FilePath """$($backupConfig.winRARPath)""" -ArgumentList $arguments -NoNewWindow -Wait
 
+$targetArchiveMaskPath = Join-Path -Path $targetPath -ChildPath "$archiveName*.*"
 if ((Get-ChildItem -Path "$targetArchiveMaskPath" -File -Recurse | Where-Object { $_.LastWriteTime -ge ($currentDate) }).Count -eq 0) {
     throw "No files were produced for $targetArchiveMaskPath in $targetPath"
 }

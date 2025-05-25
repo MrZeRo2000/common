@@ -17,7 +17,10 @@ Write-Host "OneDrive root folder: $($backupConfig.targetRootPath)" -ForegroundCo
 $sourcePath = $($backupConfig.targetRootPath)
 $targetPath = Join-Path -Path (Join-Path -Path $env:TEMP -ChildPath backup) -ChildPath priv
 
-$arguments = "a -s -m5 -r -e+shrad -hp$($backupConfig.archivePassword) -agYYMMDD_HHMM ""$targetPath"" ""$sourcePath"""
+$archivePaths = Get-ChildItem -Path $sourcePath -Recurse -Directory -Depth 0 | ForEach-Object {"`"$($_.FullName)`""}
+$archivePathsString = $archivePaths -Join " "
+
+$arguments = "a -s -m5 -r -x$sourcePath\Odeon\db\backup\*.bak* -x$sourcePath\Temp\ -e+shrad -hp$($backupConfig.archivePassword) -agYYMMDD_HHMM ""$targetPath"" $archivePathsString"
 
 Write-Host "Arguments: $arguments" -ForegroundColor DarkGray
 

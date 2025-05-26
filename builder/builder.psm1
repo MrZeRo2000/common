@@ -18,7 +18,7 @@ function Find-Java {
   return $path
 }
 
-function Set-Java-Home {
+function Set-JavaHome {
   if (-Not ($env:JAVA_HOME)) {
     $javaPath = Find-Java    
     if ($javaPath) {
@@ -53,7 +53,7 @@ function Build {
     Set-Location $startLocation
 }
 
-function Start-Build-Java-Int {
+function Start-BuildJavaInt {
   param (        
         [string]$project        
     )
@@ -64,7 +64,7 @@ function Start-Build-Java-Int {
 
     Set-Location $startLocation
 }
-function Start-Build-Java-Prod {
+function Start-BuildJavaProd {
   param (        
         [string]$project        
     )
@@ -90,7 +90,7 @@ function Find-Tomcat  {
   }
 }
 
-function Remove-If-Exists {
+function Remove-IfExists {
   param (
     [string]$path
   )
@@ -100,7 +100,7 @@ function Remove-If-Exists {
   }
 }
 
-function Start-Build-Web {
+function Start-BuildWeb {
   param (
     [string]$project
   )
@@ -118,7 +118,7 @@ function Start-Build-Web {
   $env:Path += ";$PSScriptRoot../../../$project/node_modules/.bin"
   
   # remove prevously built project
-  Remove-If-Exists "dist/$project" -Recurse -Confirm:$false
+  Remove-IfExists "dist/$project" -Recurse -Confirm:$false
   # build the project
   Write-Host "Current location: $(Get-Location)" -ForegroundColor DarkGray
   Invoke-Expression "ng build --configuration production --base-href=/$project/"
@@ -128,22 +128,22 @@ function Start-Build-Web {
   Write-Host Project $project build completed -ForegroundColor Cyan
 }
 
-function Start-Deploy-Web {
+function Start-DeployWeb {
   param (
     [string]$tomcat,
     [string]$project
   )
   Write-Host Deploying project $project -ForegroundColor DarkGray
 
-  Remove-If-Exists "$tomcat\work\Catalina\localhost\$project"
-  Remove-If-Exists "$tomcat\webapps\$project"
+  Remove-IfExists "$tomcat\work\Catalina\localhost\$project"
+  Remove-IfExists "$tomcat\webapps\$project"
   
   Copy-Item -Path "$PSScriptRoot../../../$project/dist/$project/browser/*" -Destination "$tomcat\webapps\$project\" -Recurse  
 
   Write-Host Project $project deployed -ForegroundColor Cyan
 }
 
-function Start-Build-And-Deploy-Web {
+function Start-BuildAndDeployWeb {
   param (
     [string]$project
   )
@@ -153,14 +153,14 @@ function Start-Build-And-Deploy-Web {
     return
   }
 
-  Start-Build-Web -project $project
-  Start-Deploy-Web -tomcat $tomcat -project $project    
+  Start-BuildWeb -project $project
+  Start-DeployWeb -tomcat $tomcat -project $project    
 }
 
-function Start-Build-And-Deploy-Java-Web {
+function Start-BuildAndDeployJavaWeb {
   param (
     [string]$project
   )
-  Start-Build-Java-Prod "$project-wss"
-  Start-Build-And-Deploy-Web "$project-ang"
+  Start-BuildJavaProd "$project-wss"
+  Start-BuildAndDeployWeb "$project-ang"
 }

@@ -1,4 +1,6 @@
-Import-Module $PSScriptRoot\..\builder\builder.ps1
+$ErrorActionPreference = "Stop"
+
+Import-Module $PSScriptRoot\..\builder\builder.psm1
 
 $tomcatPath = Find-Tomcat
 Write-Host "Tomcat: $tomcatPath" -ForegroundColor DarkGray

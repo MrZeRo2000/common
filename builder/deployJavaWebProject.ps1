@@ -1,5 +1,7 @@
 param ($project = $(throw "Project parameter is required."))
-. $PSScriptRoot\builder.ps1
+
+$ErrorActionPreference = "Stop"
+Import-Module $PSScriptRoot\builder.psm1
 
 Write-Host "Started with project $project" -ForegroundColor DarkGray
 Start-Build-And-Deploy-Java-Web $project

@@ -1,5 +1,7 @@
 param ($project = $(throw "Project parameter is required."))
-Import-Module $PSScriptRoot\builder.ps1 -Force
+
+$ErrorActionPreference = "Stop"
+Import-Module $PSScriptRoot\builder.psm1  -Force
 
 Write-Host "Started with project $project" -ForegroundColor DarkGray
 Start-Build-And-Deploy-Web $project

@@ -117,6 +117,28 @@ Function Move-LogsByYear {
 	}
 }
 
+Function Remove-FilesByMaskWithRetention  {
+	param(
+		[Parameter(Position=0, Mandatory=$true)]
+		[string]$fileMask,
+		[Parameter(Position=1, Mandatory=$true)]
+		[int]$retainCount
+	)
+
+	$allFiles = Get-ChildItem -Path $fileMask -File | ForEach-Object {$_.FullName} | Sort-Object -Descending
+	if ($allFiles.Count -gt $retainCount) {
+		$retainedFiles = $allFiles[0..($retainCount - 1)]
+		$filedToRemove = $allFiles | Where-Object {-not ($_ -in $retainedFiles)}
+
+		$filedToRemove | ForEach-Object {
+			Write-Host "Removing $_" -ForegroundColor DarkGray
+			Remove-Item -Path $_
+		}
+	} else {
+		Write-Host "No files to remove" -ForegroundColor DarkGray
+	}
+}
+
 Function Sync-Folder {
 	param(
 		[Parameter(Position=0, Mandatory=$true)]

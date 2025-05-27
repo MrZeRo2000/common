@@ -49,9 +49,89 @@ Function Compare-FolderSize {
 		}
 	}
 
+	$scriptBlock = {
+    	param($inputFolder)
+		
+		Function Get-FilesCountAndSize {
+			param (
+					[string]$folder
+			)
+
+			try {
+				$result = @{}
+
+				Get-ChildItem -Path $folder -Recurse -File | ForEach-Object {
+					$folderName = $_.Directory.FullName.Replace($folder, '~')
+
+					$fileSize = $_.Length
+					if ($result.ContainsKey($folderName)) {
+						$value = $result[$folderName]
+						$value.Count = $value.Count + 1
+						$value.Size = $value.Size + $fileSize
+					} else {
+						$result[$folderName] = @{
+							Count = 1
+							Size = $fileSize
+						}
+					}
+				}
+
+				return $result
+			} catch {
+				# Capture the error and return it in the hashtable
+				return @{
+					Error = $_.Exception.Message
+					dataInput = $dataInput
+					Timestamp = (Get-Date).ToString()
+				}
+    		}
+		}		
+	}
+
+	# Create a runspace pool
+	$runspacePool = [runspacefactory]::CreateRunspacePool(1, 2)
+	$runspacePool.Open()
+
+	# Create PowerShell instances for each parallel execution
+	$powershell1 = [powershell]::Create().AddScript($scriptBlock).AddArgument($folders[0])
+	$powershell1.RunspacePool = $runspacePool
+
+	$powershell2 = [powershell]::Create().AddScript($scriptBlock).AddArgument($folders[1])
+	$powershell2.RunspacePool = $runspacePool
+
+	# Start the parallel execution
+	$asyncResult1 = $powershell1.BeginInvoke()
+	$asyncResult2 = $powershell2.BeginInvoke()
+
+	# Wait for completion and collect the results
+	$result1 = $powershell1.EndInvoke($asyncResult1)
+	$result2 = $powershell2.EndInvoke($asyncResult2)
+
+	# Close the runspace pool
+	$runspacePool.Close()
+	$runspacePool.Dispose()
+
+	# Output the results
+	Write-Output "Result 1:"
+	Write-Output $result1
+
+	Write-Output "Result 2:"
+	Write-Output $result2	
+
+	if ($result1.Contains("Error")) {
+		throw $result1["Error"]
+	}
+
+	if ($result2.Contains("Error")) {
+		throw $result2["Error"]
+	}
+
+
+	<#
 	$foldersInfo = $folders | ForEach-Object {
 		return Get-FilesCountAndSize -folder $_
 	}
+	#>
 
 	$allKeysUnique = ($foldersInfo[0].Keys + $foldersInfo[1].Keys) | Sort-Object -Unique
 	# Write-Host "all keys unique count: $($allKeysUnique.Count)" -ForegroundColor DarkGray

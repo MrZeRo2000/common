@@ -1,3 +1,4 @@
+$ErrorActionPreference = "Stop"
 
 Function Get-BackupConfig {
 	$winRARPaths = "$env:LOCALAPPDATA\Programs\WinRAR\winrar.exe", "$env:ProgramFiles\WinRAR\winrar.exe"

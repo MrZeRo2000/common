@@ -1,3 +1,4 @@
+$ErrorActionPreference = "Stop"
 
 Import-Module -Name (Join-Path -Path $PSScriptRoot -ChildPath config.psm1) -Function Get-BackupSchema -Force
 

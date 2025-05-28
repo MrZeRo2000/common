@@ -2,6 +2,8 @@
 
 #>
 
+$ErrorActionPreference = "Stop"
+
 function Find-Java {
   $SearchPaths = "$env:LOCALAPPDATA\Programs", "C:\WinApp"
   Write-Host Path to search: $SearchPaths

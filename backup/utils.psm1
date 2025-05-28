@@ -79,7 +79,6 @@ Function Compare-FolderSize {
 				return $result
 			} catch {
 				# Capture the error and return it in the hashtable
-				Write-Host "Returning error"
 				return @{
 					Error = $_.Exception.Message
 				}
@@ -118,7 +117,6 @@ Function Compare-FolderSize {
 				return $result
 			} catch {
 				# Capture the error and return it in the hashtable
-				Write-Host "Returning error"
 				return @{
 					Error = $_.Exception.Message
 				}

@@ -2,7 +2,7 @@
 .SYNOPSIS
     Backup OneDrive folder
 .DESCRIPTION
-    Backup OneDrive folder to %TEMP%\backup. Np arguments
+    Backup OneDrive folder to %TEMP%\backup.
     Has no arguments
 #>
 

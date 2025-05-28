@@ -1,3 +1,5 @@
+$ErrorActionPreference = "Stop"
+
 function Update-RepoAll {
     param (
         [Parameter(Mandatory)]

@@ -60,5 +60,15 @@
           "Training", 
           "Health"
         ]
+    },
+    {
+        "sourceDrive":  "J",
+        "targetDrive":  "Z",        
+        "name":  "Backup media to Z",
+        "folders": [
+          "ARCHIVE\\Lossless",
+          "ARCHIVE\\MP3 Music",
+          "ARCHIVE\\Classics"
+        ]
     }
 ]

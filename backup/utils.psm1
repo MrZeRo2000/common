@@ -251,17 +251,34 @@ Function Sync-Folder {
 	$logFileName = "$(Get-Date -Format ""yyyy_MM_dd HH_mm_ss"") $folderName log.txt"
 	$logFilePath = Join-Path -Path $(Split-Path -Path $logFileRootPath -Qualifier) -Child $($logFileName)
 
-	$copyArgs = @(
-		$sourcePath,
-		$targetPath,
-		"/MIR", 
-		"/FFT",
-		"/R:0", 
-		"/Z",
-		"/TEE", 
-		"/NP",
-		"/LOG:""$logFilePath"""
-	)
+	if ("Z" -eq (Split-Path -Path $targetPath -Qualifier)[0]) {		
+		$targetPathMedia = Join-Path -Path (Split-Path -Path $targetPath -Qualifier) -ChildPath (Split-Path -Path $targetPath -Leaf)
+		Write-Host "Copying media $targetPathMedia without logs" -ForegroundColor DarkGray
+		$copyArgs = @(
+			$sourcePath,
+			$targetPathMedia,
+			"/MIR", 
+			"/xo",
+			"/xn",
+			"/FFT",
+			"/R:0", 
+			"/Z",
+			"/TEE", 
+			"/NP"
+		)
+	} else {
+		$copyArgs = @(
+			$sourcePath,
+			$targetPath,
+			"/MIR", 
+			"/FFT",
+			"/R:0", 
+			"/Z",
+			"/TEE", 
+			"/NP",
+			"/LOG:""$logFilePath"""
+		)
+	}	
 
 	$process = Start-Process -FilePath "robocopy" -ArgumentList $copyArgs -NoNewWindow -Wait -PassThru
 	$exitCode = $process.ExitCode

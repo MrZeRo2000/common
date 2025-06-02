@@ -152,7 +152,8 @@ Function Compare-FolderSize {
 	$allKeysUnique = ($foldersInfo[0].Keys + $foldersInfo[1].Keys) | Sort-Object -Unique
 	# Write-Host "all keys unique count: $($allKeysUnique.Count)" -ForegroundColor DarkGray
 
-	foreach ($key in $allKeysUnique) {    
+	foreach ($key in $allKeysUnique) {
+		# Write-Host "Checking key: $key" -ForegroundColor DarkGray
 		for ($i = 0; $i -lt $folders.Length; $i++) {
 			if (-Not $foldersInfo[$i].ContainsKey($key)) {
 				throw "Folder $($folders[$i]) does not contain path $key"
@@ -163,20 +164,22 @@ Function Compare-FolderSize {
 					Count = $foldersInfo[0][$key].Count - $foldersInfo[$i][$key].Count
 					Size  = $foldersInfo[0][$key].Size - $foldersInfo[$i][$key].Size
 				}
+
+				if ($diff.Count -Ne 0) {
+					throw "Different number of files in $key\:" + 
+					"`n$($folders[0]): $($foldersInfo[0][$key].Count)" + 
+					"`n$($folders[1]): $($foldersInfo[1][$key].Count)"
+				}
+
+				if ($diff.Size -Ne 0) {
+					throw "Different file sizes in $key\:" + 
+					"`n$($folders[0]): $($foldersInfo[0][$key].Size)" + 
+					"`n$($folders[1]): $($foldersInfo[1][$key].Size)"
+				}  				
 			}
 		}
 
-		if ($diff.Count -Ne 0) {
-			throw "Different number of files:" + 
-			"`n$($folders[0]): $($foldersInfo[0][$key].Count)" + 
-			"`n$($folders[1]): $($foldersInfo[1][$key].Count)"
-		}
 
-		if ($diff.Size -Ne 0) {
-			throw "Different file sizes:" + 
-			"`n$($folders[0]): $($foldersInfo[0][$key].Size)" + 
-			"`n$($folders[1]): $($foldersInfo[1][$key].Size)"
-		}  
 	}
 }
 
@@ -252,11 +255,10 @@ Function Sync-Folder {
 	$logFilePath = Join-Path -Path $(Split-Path -Path $logFileRootPath -Qualifier) -Child $($logFileName)
 
 	if ("Z" -eq (Split-Path -Path $targetPath -Qualifier)[0]) {		
-		$targetPathMedia = Join-Path -Path (Split-Path -Path $targetPath -Qualifier) -ChildPath (Split-Path -Path $targetPath -Leaf)
-		Write-Host "Copying media $targetPathMedia without logs" -ForegroundColor DarkGray
+		Write-Host "Copying media without logs" -ForegroundColor DarkGray
 		$copyArgs = @(
-			$sourcePath,
-			$targetPathMedia,
+			"`"$sourcePath`"",
+			"`"$targetPath`"",
 			"/MIR", 
 			"/xo",
 			"/xn",
@@ -339,8 +341,13 @@ Function Sync-DriveFolders {
 
 	# backup / sync
 	foreach ($folder in $folderList) {
-		$sourcePath = Join-Path -Path $sourceDrivePath -ChildPath $folder 
-		$targetPath = Join-Path -Path $targetDrivePath -ChildPath $folder 
+		$sourcePath = Join-Path -Path $sourceDrivePath -ChildPath $folder
+		$targetPath = Join-Path -Path $targetDrivePath -ChildPath $folder
+
+		if ("Z" -eq (Split-Path -Path $targetPath -Qualifier)[0]) {	
+			$targetPath = Join-Path -Path (Split-Path -Path $targetPath -Qualifier) -ChildPath (Split-Path -Path $targetPath -Leaf)
+		} 
+		 
 
 		if (-not (Test-Path -Path $sourcePath)) {
 			throw "Source path $($sourcePath) not found"   
@@ -357,6 +364,11 @@ Function Sync-DriveFolders {
 	foreach ($folder in $folderList) {
 		$sourcePath = Join-Path -Path $sourceDrivePath -ChildPath $folder 
 		$targetPath = Join-Path -Path $targetDrivePath -ChildPath $folder 
+
+		if ("Z" -eq (Split-Path -Path $targetPath -Qualifier)[0]) {	
+			$targetPath = Join-Path -Path (Split-Path -Path $targetPath -Qualifier) -ChildPath (Split-Path -Path $targetPath -Leaf)
+		} 
+
 		Write-Host "`nComparing $sourcePath with $targetPath ..." -ForegroundColor DarkGray
 
 		$executionTime = Measure-Command {

@@ -5,7 +5,7 @@ Import-Module $PSScriptRoot\..\builder\builder.psm1
 $tomcatPath = Find-Tomcat
 Write-Host "Tomcat: $tomcatPath" -ForegroundColor DarkGray
 
-If (-Not (Set-Java-Home)) {
+If (-Not (Set-JavaHome)) {
     Exit
 } 
 

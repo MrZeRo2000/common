@@ -4,5 +4,5 @@ $ErrorActionPreference = "Stop"
 Import-Module $PSScriptRoot\builder.psm1  -Force
 
 Write-Host "Started with project $project" -ForegroundColor DarkGray
-Start-Build-And-Deploy-Web $project
+Start-BuildAndDeployWeb $project
 Write-Host "Project $project completed" -ForegroundColor DarkGray

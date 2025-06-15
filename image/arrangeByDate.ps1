@@ -6,10 +6,12 @@
     It checks if the destination folder already exists and creates it if necessary.
 #>
 
-Import-Module -Name (Join-Path -Path $PSScriptRoot -ChildPath config.ps1) -Variable "img_new_folder"
+Import-Module -Name (Join-Path -Path $PSScriptRoot -ChildPath config.psm1) -Function Get-ImgConfig
+
+$config = Get-ImgConfig
 
 
-$path = $img_new_folder
+$path = $config.img_new_folder
 if (-Not (Test-Path -Path $path)) {
     throw "Path $path does not exist."
 }

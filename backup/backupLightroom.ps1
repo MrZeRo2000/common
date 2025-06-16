@@ -9,7 +9,6 @@
 $ErrorActionPreference = "Stop"
 
 Import-Module -Name (Join-Path -Path $PSScriptRoot -ChildPath config.psm1) -Function Get-BackupConfig
-Import-Module -Name (Join-Path -Path $PSScriptRoot -ChildPath utils.psm1) -Function Remove-FilesByMaskWithRetention
 
 $backupConfig = Get-BackupConfig
 Write-Host "winRAR folder: $($backupConfig.winRARPath)" -ForegroundColor DarkGray
@@ -34,5 +33,8 @@ if ((Get-ChildItem -Path "$targetArchiveMaskPath" -File -Recurse | Where-Object 
 }
 
 # remove old archives
+
+Import-Module -Name (Join-Path -Path $PSScriptRoot -ChildPath utils.psm1) -Function Remove-FilesByMaskWithRetention -Force
+
 $targetArchiveAllPath = Join-Path -Path $targetPath -ChildPath "$archiveName*.rar"
 Remove-FilesByMaskWithRetention -fileMask $targetArchiveAllPath -retainCount 2

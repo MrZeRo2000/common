@@ -102,6 +102,20 @@ function Remove-IfExists {
   }
 }
 
+function  New-IfNotExists {
+  param (
+    [string]$path
+  )
+
+  Write-Host Checking folder $path -ForegroundColor DarkGray
+
+  if (-not (Test-Path -Path $path -PathType Container)) {
+    Write-Host Creating folder $path -ForegroundColor DarkGray
+    New-Item -ItemType Directory -Path $path
+  }
+}
+
+
 function Start-BuildWeb {
   param (
     [string]$project
@@ -137,10 +151,15 @@ function Start-DeployWeb {
   )
   Write-Host Deploying project $project -ForegroundColor DarkGray
 
+  $DestinationFolder = "$tomcat\webapps\$project"
+
   Remove-IfExists "$tomcat\work\Catalina\localhost\$project"
-  Remove-IfExists "$tomcat\webapps\$project"
+  Remove-IfExists "$DestinationFolder"
+  New-IfNotExists "$DestinationFolder"
+
+  Write-Host Copying to $DestinationFolder -ForegroundColor DarkGray
   
-  Copy-Item -Path "$PSScriptRoot../../../$project/dist/$project/browser/*" -Destination "$tomcat\webapps\$project\" -Recurse  
+  Copy-Item -Path "$PSScriptRoot../../../$project/dist/$project/browser/*" -Destination "$DestinationFolder\" -Recurse  
 
   Write-Host Project $project deployed -ForegroundColor Cyan
 }
